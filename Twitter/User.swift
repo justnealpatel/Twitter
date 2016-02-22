@@ -1,5 +1,5 @@
 //
-//  TwitterClient.swift
+//  User.swift
 //  Twitter
 //
 //  Created by Neal Patel on 2/20/16.
@@ -8,6 +8,6 @@
 
 import UIKit
 
-class TwitterClient: BDBOAuth1SessionManager {
+class User: NSObject {
 
 }
