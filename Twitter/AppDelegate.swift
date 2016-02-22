@@ -13,12 +13,25 @@ import BDBOAuth1Manager
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
+    var storyboard = UIStoryboard(name: "Main", bundle: nil)
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+//        if User.currentUser != nil {
+//            print("Current user detected \(User.currentUser?.name)")
+//            let vc = storyboard.instantiateViewControllerWithIdentifier("TweetsNC") as UIViewController
+//            window?.rootViewController = vc
+//        } else {
+//            print("user not detected")
+//        }
+//        
+//        NSNotificationCenter.defaultCenter().addObserverForName(User.userDidLogoutNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (NSNotification) -> Void in
+//            let vc = self.storyboard.instantiateInitialViewController()
+//            self.window?.rootViewController = vc
+//        }
         return true
     }
+}
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -41,20 +54,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
+    
     func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool {
-        TwitterClient.sharedInstance.fetchAccessTokenWithPath("oauth/access_token", method: "POST", requestToken: BDBOAuth1Credential(queryString: url.query), success: { (accessToken: BDBOAuth1Credential) -> Void in
-            print("Got the access token!")
-            TwitterClient.sharedInstance.requestSerializer.saveAccessToken(accessToken)
-            
-            TwitterClient.sharedInstance.GET("1.1/account/verify_credentials.json", parameters: nil, success: { (operation: NSURLSessionDataTask!, response: AnyObject!) -> Void in
-                print("user: \(response)")
-                }, failure: { (operation: NSURLSessionDataTask!, error: NSError!) -> Void in
-                    print("error getting current user") })
-                }) { (error: NSError!) -> Void in
-                    print("Failed to receive access token")
-        }
+        TwitterClient.sharedInstance.handleOpenURL(url)
         return true
     }
-}
-
