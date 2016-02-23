@@ -12,18 +12,6 @@ import BDBOAuth1Manager
 class TwitterClient: BDBOAuth1SessionManager {
     static let sharedInstance = TwitterClient(baseURL: NSURL(string: "https://api.twitter.com")!, consumerKey: "BHf9k1YH9RvQDPRgNv9fFulJl", consumerSecret: "xWc15bRrjM4S6Kp4rBaX0Ivj0qD8fgNdPq4HO40EuGaBM9id3X")
     
-    func homeTimeline(success: ([Tweet]) -> (), failure: (NSError) -> ()) {
-        GET("1.1/statuses/home_timeline.json", parameters: nil, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
-            let dictionaries = response as! [NSDictionary]
-            let tweets = Tweet.tweetsWithArray(dictionaries)
-            print("home timeline")
-                success(tweets)
-            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
-            print("home timeline error!")
-                failure(error)
-        })
-    }
-    
     func currentAccount(success: (User) -> (), failure: (NSError) -> ()) {
         GET("1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             let userDictionary = response as! NSDictionary
@@ -34,6 +22,19 @@ class TwitterClient: BDBOAuth1SessionManager {
             }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
                 // Code
                 print("you have failed this city")
+                failure(error)
+        })
+    }
+    
+    func homeTimeline(success: ([Tweet]) -> (), failure: (NSError) -> ()) {
+        GET("1.1/statuses/home_timeline.json", parameters: nil, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            print("home timeline")
+            let dictionaries = response as! [NSDictionary]
+            let tweets = Tweet.tweetsWithArray(dictionaries)
+            print("home timeline")
+                success(tweets)
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+            print("home timeline error!")
                 failure(error)
         })
     }
@@ -54,6 +55,7 @@ class TwitterClient: BDBOAuth1SessionManager {
             let url = NSURL(string: "https://api.twitter.com/oauth/authorize?oauth_token=\(requestToken.token)")!
             print(url)
             UIApplication.sharedApplication().openURL(url)
+            print("login success")
             }) { (error: NSError!) -> Void in
                 // Code
                 print("login ERROR!")
@@ -62,11 +64,11 @@ class TwitterClient: BDBOAuth1SessionManager {
         }
     }
     
-//    func logout() {
-//        User.currentUser = nil
-//        deauthorize()
-//        NSNotificationCenter.defaultCenter().postNotificationName(User.userDidLogoutNotification, object: nil)
-//    }
+    func logout() {
+        User.currentUser = nil
+        deauthorize()
+        NSNotificationCenter.defaultCenter().postNotificationName(User.userDidLogoutNotification, object: nil)
+    }
     
     func retweet(id: String) {
         POST("1.1/statuses/retweet/\(id).json", parameters: nil, progress: nil,
@@ -90,7 +92,7 @@ class TwitterClient: BDBOAuth1SessionManager {
         )
     }
     
-    func createFavorite(id: String) {
+    func createFav(id: String) {
         POST("1.1/favorites/create.json?id=\(id)", parameters: nil, progress: nil,
             success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
                 print("Create a favorite")
@@ -101,7 +103,7 @@ class TwitterClient: BDBOAuth1SessionManager {
         )
     }
     
-    func destroyFavorite(id: String) {
+    func destroyFav(id: String) {
         POST("1.1/favorites/destroy.json?id=\(id)", parameters: nil, progress: nil,
             success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
                 print("Destroy a favorite")
@@ -116,10 +118,10 @@ class TwitterClient: BDBOAuth1SessionManager {
         let requestToken = BDBOAuth1Credential(queryString: url.query)
         fetchAccessTokenWithPath("oauth/access_token", method: "POST", requestToken: requestToken, success: { (accessToken: BDBOAuth1Credential!) -> Void in
             // Code
-            print("I got the access token!")
+            print("entering handleopenurl")
             self.currentAccount({ (user: User) -> () in
                 print("entering")
-//                User.currentUser = user
+                User.currentUser = user
                 print("success!")
                 self.loginSuccess?()
                 }, failure: { (error: NSError) -> () in

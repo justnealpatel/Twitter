@@ -17,21 +17,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
-//        if User.currentUser != nil {
-//            print("Current user detected \(User.currentUser?.name)")
-//            let vc = storyboard.instantiateViewControllerWithIdentifier("TweetsNC") as UIViewController
-//            window?.rootViewController = vc
-//        } else {
-//            print("user not detected")
-//        }
-//        
-//        NSNotificationCenter.defaultCenter().addObserverForName(User.userDidLogoutNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (NSNotification) -> Void in
-//            let vc = self.storyboard.instantiateInitialViewController()
-//            self.window?.rootViewController = vc
-//        }
+        if User.currentUser != nil {
+            print("Current user detected \(User.currentUser?.name)")
+            let vc = storyboard.instantiateViewControllerWithIdentifier("TweetsNC") as UIViewController
+            window?.rootViewController = vc
+        } else {
+            print("user not detected")
+        }
+        
+        NSNotificationCenter.defaultCenter().addObserverForName(User.userDidLogoutNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (NSNotification) -> Void in
+            let vc = self.storyboard.instantiateInitialViewController()
+            self.window?.rootViewController = vc
+            print("switch back")
+        }
         return true
     }
-}
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -54,8 +54,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-    
+
+
     func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool {
+        print("anything?")
         TwitterClient.sharedInstance.handleOpenURL(url)
         return true
     }
+}

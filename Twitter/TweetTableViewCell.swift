@@ -27,28 +27,17 @@ class TweetTableViewCell: UITableViewCell {
         // Initialization code
     }
     
-    func convertTimeToString(number: Int) -> String{
-        let day = number/86400
-        let hour = (number - day * 86400)/3600
-        let minute = (number - day * 86400 - hour * 3600)/60
-        if day != 0{
-            return String(day) + "d"
-        }else if hour != 0 {
-            return String(hour) + "h"
-        }else{
-            return String(minute) + "m"
-        }
-    }
-    
     var tweet: Tweet! {
         didSet {
             let dictionary = tweet.currentDictionary
             let profileURL = "\(((dictionary["user"]!)["profile_image_url_https"]!)!)"
+            print("dictionary: !!!!!\(dictionary)")
             let URL = NSURL(string: profileURL)!
+            twitterNameLabel.text = "\(((dictionary["user"]!)["name"]!)!)"
+            usernameLabel.text = "@\(((dictionary["user"]!)["screen_name"]!)!)"
+            print(usernameLabel.text)
             profileImageView.setImageWithURL(URL)
             profileImageView.contentMode = .ScaleAspectFit
-            let twitterHandle = "@\(((dictionary["user"]!)["screen_name"]!)!)"
-            usernameLabel.text = "\(twitterHandle)"
             tweetContentTextView.text = "\(tweet.text!)"
             datePostedTextField.text = "\(tweet.timeStamp)"
             datePostedTextField.text = convertTimeToString(Int(NSDate().timeIntervalSinceDate(tweet.timeStamp!)))
@@ -59,6 +48,19 @@ class TweetTableViewCell: UITableViewCell {
             print("current fav count is \(currentFavoriteCount)")
             print("Retweet: \(tweet.retweetCount)")
             print("didSet called!")
+        }
+    }
+    
+    func convertTimeToString(number: Int) -> String{
+        let day = number/86400
+        let hour = (number - day * 86400)/3600
+        let minute = (number - day * 86400 - hour * 3600)/60
+        if day != 0{
+            return String(day) + "d"
+        } else if hour != 0 {
+            return String(hour) + "h"
+        } else {
+            return String(minute) + "m"
         }
     }
 
@@ -84,12 +86,12 @@ class TweetTableViewCell: UITableViewCell {
     
     @IBAction func favoriteButtonClicked(sender: AnyObject) {
         if (tweet.favorited!) {
-            TwitterClient.sharedInstance.destroyFavorite(tweet.id!)
+            TwitterClient.sharedInstance.destroyFav(tweet.id!)
             print("current fav count is \(currentFavoriteCount)")
             tweet.favoritesCount = currentFavoriteCount
             tweet.favorited = false
         } else {
-            TwitterClient.sharedInstance.createFavorite(tweet.id!)
+            TwitterClient.sharedInstance.createFav(tweet.id!)
             print("current fav count is \(currentFavoriteCount)")
             tweet.favoritesCount = currentFavoriteCount
             tweet.favoritesCount++
