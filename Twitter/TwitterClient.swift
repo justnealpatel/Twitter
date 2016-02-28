@@ -26,6 +26,17 @@ class TwitterClient: BDBOAuth1SessionManager {
         })
     }
     
+    func tweet(text: String) {
+        TwitterClient.sharedInstance.POST("1.1/statuses/update.json?status=\(text)", parameters: nil, progress: nil,
+            success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+                print("Tweet")
+            },
+            failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                print("Error Tweeting")
+            }
+        )
+    }
+    
     func homeTimeline(success: ([Tweet]) -> (), failure: (NSError) -> ()) {
         GET("1.1/statuses/home_timeline.json", parameters: nil, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
             print("home timeline")
@@ -64,11 +75,11 @@ class TwitterClient: BDBOAuth1SessionManager {
         }
     }
     
-    func logout() {
-        User.currentUser = nil
-        deauthorize()
-        NSNotificationCenter.defaultCenter().postNotificationName(User.userDidLogoutNotification, object: nil)
-    }
+//    func logout() {
+//        User.currentUser = nil
+//        deauthorize()
+//        NSNotificationCenter.defaultCenter().postNotificationName(User.userDidLogoutNotification, object: nil)
+//    }
     
     func retweet(id: String) {
         POST("1.1/statuses/retweet/\(id).json", parameters: nil, progress: nil,
@@ -121,7 +132,8 @@ class TwitterClient: BDBOAuth1SessionManager {
             print("entering handleopenurl")
             self.currentAccount({ (user: User) -> () in
                 print("entering")
-                User.currentUser = user
+//                let user = User(dictionary: response as! NSDictionary)
+//                User.currentUser = user
                 print("success!")
                 self.loginSuccess?()
                 }, failure: { (error: NSError) -> () in

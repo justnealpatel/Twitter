@@ -9,6 +9,9 @@
 import UIKit
 import AFNetworking
 
+var dictionary: NSDictionary = NSDictionary()
+
+
 class TweetsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tweetTableView: UITableView!
@@ -20,8 +23,10 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
+        tweetTableView.rowHeight = UITableViewAutomaticDimension
+        tweetTableView.estimatedRowHeight = 120
         let image : UIImage = UIImage(named: "TwitterTest.png")!
-        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
         imageView.contentMode = .ScaleAspectFit
         imageView.image = image
         self.navigationItem.titleView = imageView
@@ -30,12 +35,27 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         TwitterClient.sharedInstance.homeTimeline({ (tweets: [Tweet]) -> () in
             self.tweets = tweets
             self.tweetTableView.reloadData()
-//            for tweet in tweets {
-//                print(tweet.text)
-//            }
             }, failure: { (error: NSError) -> () in
                 print(error.localizedDescription)
         })
+    }
+    
+    func tableView(tableView: UITableView, didHighlightRowAtIndexPath indexPath: NSIndexPath) {
+        print("You did it!")
+        tweetTableView.backgroundColor = UIColor(white: 1, alpha: 1.0)
+        
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let selectedCell = tweetTableView.cellForRowAtIndexPath(indexPath)! as! TweetTableViewCell
+        dictionary = selectedCell.tweet.currentDictionary
+        print("tweet date is \(selectedCell.tweet.timeStamp)")
+        date = selectedCell.tweet.timeStamp
+        retweet = selectedCell.tweet.retweetCount
+        likes = selectedCell.tweet.favoritesCount
+        thisTweet = selectedCell.tweet
+        tweetText = "@\(((dictionary["user"]!)["screen_name"]!)!) "
+
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -46,33 +66,14 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
+    @IBAction func tweetPressed(sender: AnyObject) {
+        performSegueWithIdentifier("tweetClicked", sender: self)
+    }
+    
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        print("cellForRowAtIndexPath called")
+//        print("cellForRowAtIndexPath called")
         let cell = tweetTableView.dequeueReusableCellWithIdentifier("tweetcell", forIndexPath: indexPath) as! TweetTableViewCell
         cell.tweet = tweets![indexPath.row]
-//        let tweet = tweets![indexPath.row]
-//        rowNumber = indexPath.row
-//        print("retweetCount:\(retweetCount)")
-//        let dictionary: NSDictionary = tweet.currentDictionary
-//        cell.tweetContentTextView.text = tweet.text as? String
-//        if retweetCount != 0{
-//            cell.retweetCount.text = "\(retweetCount)"
-//        } else {
-//            cell.retweetCount.text = "\(tweet.retweetCount)"
-//        }
-//        print(cell.retweetCount.text!)
-//        retweetCount = NSNumberFormatter().numberFromString(cell.retweetCount.text!) as! Int
-////        print(retweetCount)
-//        let favorites = "\(((dictionary["user"]!)["favourites_count"]!)!)"
-//        cell.favoritesCount.text = favorites
-//        let profileURL = "\(((dictionary["user"]!)["profile_image_url_https"]!)!)"
-//        let URL = NSURL(string: profileURL)!
-//        cell.datePostedTextField.text = convertTimeToString(Int(NSDate().timeIntervalSinceDate(tweet.timeStamp!)))
-//        cell.profileImageView.setImageWithURL(URL)
-//        cell.profileImageView.contentMode = .ScaleAspectFit
-//        let twitterHandle = "@\(((dictionary["user"]!)["screen_name"]!)!)"
-//        cell.usernameLabel.text = twitterHandle
-//        cell.twitterNameLabel.text = "\(((dictionary["user"]!)["name"]!)!)"
         return cell
     }
 
@@ -82,6 +83,6 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     @IBAction func onLogoutButton(sender: AnyObject) {
-        TwitterClient.sharedInstance.logout()
+//        TwitterClient.sharedInstance.logout()
     }
 }

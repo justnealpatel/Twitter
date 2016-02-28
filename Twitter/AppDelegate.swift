@@ -17,19 +17,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
-        if User.currentUser != nil {
-            print("Current user detected \(User.currentUser?.name)")
-            let vc = storyboard.instantiateViewControllerWithIdentifier("TweetsNC") as UIViewController
-            window?.rootViewController = vc
-        } else {
-            print("user not detected")
-        }
-        
-        NSNotificationCenter.defaultCenter().addObserverForName(User.userDidLogoutNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (NSNotification) -> Void in
-            let vc = self.storyboard.instantiateInitialViewController()
-            self.window?.rootViewController = vc
-            print("switch back")
-        }
+//        if User.currentUser != nil {
+//            print("Current user detected \(User.currentUser?.name)")
+//            let vc = storyboard.instantiateViewControllerWithIdentifier("TweetsNC") as UIViewController
+//            window?.rootViewController = vc
+//        } else {
+//            print("user not detected")
+//        }
+//        
+//        NSNotificationCenter.defaultCenter().addObserverForName(User.userDidLogoutNotification, object: nil, queue: NSOperationQueue.mainQueue()) { (NSNotification) -> Void in
+//            let vc = self.storyboard.instantiateInitialViewController()
+//            self.window?.rootViewController = vc
+//            print("switch back")
+//        }
         return true
     }
 

@@ -8,6 +8,9 @@
 
 import UIKit
 
+var date: NSDate? = NSDate()
+//Sun Feb 28 02:41:16 +0000 2016
+//Optional(2016-02-28 02:41:19 +0000)
 class Tweet: NSObject {
     var text: NSString?
     var timeStamp: NSDate?

@@ -8,13 +8,26 @@
 
 import UIKit
 
+func convertTimeToString(number: Int) -> String{
+    let day = number/86400
+    let hour = (number - day * 86400)/3600
+    let minute = (number - day * 86400 - hour * 3600)/60
+    if day != 0{
+        return String(day) + "d"
+    } else if hour != 0 {
+        return String(hour) + "h"
+    } else {
+        return String(minute) + "m"
+    }
+}
+
 class TweetTableViewCell: UITableViewCell {
 
     
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var twitterNameLabel: UILabel!
     @IBOutlet weak var datePostedTextField: UITextField!
-    @IBOutlet weak var tweetContentTextView: UITextView!
+    @IBOutlet weak var tweetContentLabel: UILabel!
     @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var retweetCount: UILabel!
     @IBOutlet weak var favoritesCount: UILabel!
@@ -29,6 +42,9 @@ class TweetTableViewCell: UITableViewCell {
     
     var tweet: Tweet! {
         didSet {
+            profileImageView.layer.cornerRadius = profileImageView.frame.size.width / 5.0;
+            profileImageView.clipsToBounds = true;
+            profileImageView.layer.borderWidth = 0.0
             let dictionary = tweet.currentDictionary
             let profileURL = "\(((dictionary["user"]!)["profile_image_url_https"]!)!)"
             print("dictionary: !!!!!\(dictionary)")
@@ -38,29 +54,21 @@ class TweetTableViewCell: UITableViewCell {
             print(usernameLabel.text)
             profileImageView.setImageWithURL(URL)
             profileImageView.contentMode = .ScaleAspectFit
-            tweetContentTextView.text = "\(tweet.text!)"
+            tweetContentLabel.text = "\(tweet.text!)"
             datePostedTextField.text = "\(tweet.timeStamp)"
             datePostedTextField.text = convertTimeToString(Int(NSDate().timeIntervalSinceDate(tweet.timeStamp!)))
             retweetCount.text = "\(tweet.retweetCount)"
             let favorites = "\(((dictionary["user"]!)["favourites_count"]!)!)"
             favoritesCount.text = favorites
             currentFavoriteCount = NSNumberFormatter().numberFromString(favorites) as! Int
+            retweet = tweet.retweetCount
+            likes = tweet.favoritesCount
             print("current fav count is \(currentFavoriteCount)")
             print("Retweet: \(tweet.retweetCount)")
             print("didSet called!")
-        }
-    }
-    
-    func convertTimeToString(number: Int) -> String{
-        let day = number/86400
-        let hour = (number - day * 86400)/3600
-        let minute = (number - day * 86400 - hour * 3600)/60
-        if day != 0{
-            return String(day) + "d"
-        } else if hour != 0 {
-            return String(hour) + "h"
-        } else {
-            return String(minute) + "m"
+            // Auto Layout stuff
+            tweetContentLabel.numberOfLines = 0
+            tweetContentLabel.preferredMaxLayoutWidth = tweetContentLabel.frame.size.width
         }
     }
 
@@ -82,6 +90,7 @@ class TweetTableViewCell: UITableViewCell {
             print("\(tweet.id!)")
         }
         retweetCount.text = "\(tweet.retweetCount)"
+        retweet = tweet.retweetCount
     }
     
     @IBAction func favoriteButtonClicked(sender: AnyObject) {
@@ -98,5 +107,6 @@ class TweetTableViewCell: UITableViewCell {
             tweet.favorited = true
         }
         favoritesCount.text = "\(tweet.favoritesCount)"
+        likes = tweet.favoritesCount
     }
 }
